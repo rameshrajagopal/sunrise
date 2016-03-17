@@ -39,11 +39,14 @@ class Product(object):
                " " + str(len(self.store_products)) + "\n" 
 
 class DataProducer(object):
-    def __init__(self, data_file):
+    def __init__(self, data_file, output_path):
         self.data_file = data_file
         self.products = []
         self.token_map = {}
         self.product_map = {}
+        self.output_path = output_path
+        self.num_shards = 0
+        self.shard_map = {}
 
     def parse(self):
         with open(self.data_file, 'r') as f:
@@ -55,6 +58,7 @@ class DataProducer(object):
                         self.token_map[e] += 1
                     else:
                         self.token_map[e] = 1
+        self.num_shards = 1
 
     def print_records(self):
         print "Products"
@@ -63,12 +67,13 @@ class DataProducer(object):
         for k,v in self.token_map.items():
             print k, v
 
-    def generate_product(self, product_file, num_stores = 2, num_variants = 2):
+    def generate_product(self, f, num_stores = 2, num_variants = 2):
         mpid = 1
         brand_id = 100
         cid = 1000
         geo = 840
-        f = open(product_file, 'w')
+        f.write(self.output_path + " " + str(self.num_shards) + "\n")
+        f.write(str(len(self.products)) + "\n")
         for p in self.products:
             variants = []
             for v in xrange(num_variants):
@@ -87,14 +92,18 @@ class DataProducer(object):
                 for v in variants:
                     f.write(str(v))
                     print "\t\t" + str(v) ,
+
+    def generate_product_file(self, product_file):
+        f = open(product_file, 'w')
+        self.generate_product(f)
         f.close()
 #main                
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 4:
         print "Usage is wrong"
-        print sys.argv[0] + " filename" 
+        print sys.argv[0] + " filename o/p_dir_name" 
         sys.exit(-1)
-    data_producer = DataProducer(sys.argv[1])
+    data_producer = DataProducer(sys.argv[1], sys.argv[2])
     data_producer.parse()
     data_producer.print_records()
-    data_producer.generate_product("/tmp/sherlokc_input.txt")
+    data_producer.generate_product_file(sys.argv[3])
