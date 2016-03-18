@@ -141,7 +141,7 @@ class DataProducer(object):
                     print "\t\t" + str(v) ,
 
     def write_header(self, f):
-        f.write(self.output_path + " " + str(self.num_shards) + "\n");
+        f.write(self.output_path + "/ " + str(self.num_shards) + "\n");
 
     def generate_product_file(self, product_file):
         f = open(product_file, 'w')
