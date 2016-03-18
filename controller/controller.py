@@ -27,11 +27,11 @@ from subprocess import call
 
 class Controller(object):
 
-    def __init__(self, port, products_file, shard_file_path):
+    def __init__(self, host, port, products_file, shard_file_path):
         self.prod_file = products_file
         self.shard_file_path = shard_file_path
         self.port = port
-        self.http_server = HttpServer(port, shard_file_path)
+        self.http_server = HttpServer(host, port, shard_file_path)
         self.http_thread = threading.Thread(target=Controller.httpServer, args = (self,))
         self.num_shards = 2
         self.indexer_type = "sherlock"
@@ -76,11 +76,11 @@ class Controller(object):
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
         print "Usage is wrong"
         print sys.argv[0] + " products_file shard_file_path"
         sys.exit(-1)
-    controller = Controller(int(sys.argv[1]), sys.argv[2], sys.argv[3])
+    controller = Controller(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4])
     controller.setup()
     controller.start()
  #   controller.join()
